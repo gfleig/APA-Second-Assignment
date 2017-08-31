@@ -1,5 +1,6 @@
 #include "sorting.h"
 
+//MERGESORT
 //faz a intercalação dos subarrays
 static void Merge(int tabela[], int aux[], int iniEsq, int iniDir, int finalDir)
 {
@@ -74,3 +75,124 @@ void mergeSort(int tabela[], int nElem)
 	
 	free(aux);
 }
+
+
+
+//QUICKSORT
+//função auxiliar que partilha a tabela(array)
+static void Partilha(int *tabela, int inf, int sup, int *posPivo)
+{
+	int pivo, esq, dir, aux;
+	
+	pivo = tabela[inf];			//pivô é o primeiro elemento
+
+	esq = inf;						//apontador
+	dir = sup;						//apontador
+
+	while(esq < dir)				//enquanto não s eencontram
+	{
+		while(tabela[esq] <= pivo && esq < sup)		//enquanto o elem atual for menor que o pivo e os apontadores não se encontrarem
+		{
+			esq++;					//sobe a tabela
+		}
+		while(tabela[dir] > pivo)							//enquanto elem atual for maior
+		{
+			dir--;					//desce a tabela
+		}
+		if(esq < dir)
+		{
+			aux = tabela[dir];	//troca-se os elementos
+			tabela[dir] = tabela[esq];
+			tabela[esq] = aux;
+		}
+	}
+
+	tabela[inf] = tabela[dir];	//troca-se as posições de dir e inf
+	tabela[dir] = pivo;
+
+	*posPivo = dir;				//a dir(apontador direito) aponta para a pos final do pivô
+}
+
+//carga pesada
+static void Quick(int tabela[], int inf, int sup)
+{
+	int posPivo;
+	
+	if(inf >=sup)
+	{
+		return;						//já deve estar ordenada
+	}
+	
+	Partilha(tabela, inf, sup, &posPivo);	//divide a tabela
+	
+	Quick(tabela, inf, posPivo - 1);			//ordena parte inferior
+	
+	Quick(tabela, posPivo + 1, sup);			//ordena parte superior
+}
+
+//função principal
+void quickSort(int tabela[], int nElem)
+{
+	Quick(tabela, 0, nElem -1);	
+}
+
+//HEAPSORT
+//função de percolação
+static void percolaAbaixo(int heap[], int i, int n)
+{
+	int filho, aux;
+	
+	//verifica-se a ordenação do i e seus filhos
+	aux = heap[i];
+	while(2 * i + 1 < n)
+	{
+		filho = 2 * i + 1;		//filho esquerdo
+		
+		if((filho != n-1) && (heap[filho + 1] > heap[filho]))	//se não estourar e o da direita for o maior
+		{
+			filho++;					//filho da direita é maior
+		}
+		
+		if(aux < heap[filho])	//fora de ordem
+		{
+			heap[i] = heap[filho];//troca
+		}
+		else
+		{
+			break;
+		}
+		
+		i = filho;
+	}
+	
+	heap[i] = aux;					//completa a troca
+}
+
+//função de ordenação em si
+void heapSort(int tabela[], int nElem)
+{
+	int i, aux;
+	
+	for(i = (nElem - 2) / 2; i >= 0; i--)		//contróis o heapa  partir do pai do último elemento
+	{
+		percolaAbaixo(tabela, i, nElem);
+	}
+	
+	for(i = nElem - 1; i >= 1; i--)				//coloca o primeiro(maior) elemento da tabela no fim
+	{
+		aux = tabela[0];
+		tabela[0] = tabela[i];
+		tabela[i] = aux;
+		
+		percolaAbaixo(tabela, 0, i);				//reordena o heap
+	}
+	
+}
+
+
+
+
+
+
+
+
